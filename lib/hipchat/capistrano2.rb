@@ -58,14 +58,39 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     def send(message, options)
-      set :hipchat_client, HipChat::Client.new(hipchat_token) if fetch(:hipchat_client, nil).nil?
-
-      if hipchat_room_name.is_a?(String)
-        rooms = [hipchat_room_name]
-      elsif hipchat_room_name.is_a?(Symbol)
-        rooms = [hipchat_room_name.to_s]
+      hipchat_multi = fetch(:hipchat_multi, false)
+      if hipchat_multi
+        send_groups_message(message, options)
       else
-        rooms = hipchat_room_name
+        send_group_message(message, options)
+      end
+    end
+
+    def send_group_message(message, options)
+      hipchat_token = fetch(:hipchat_token)
+      hipchat_rooms = fetch(:hipchat_rooms)
+
+      send_hitchat_message(hipchat_token, hipchat_rooms, options)
+    end
+
+    def send_groups_message(message, options)
+      hichat_groups = fetch(:hipchat_groups)
+      return unless hipchat_groups.is_a?(Hash)
+
+      hipchat_groups.each do |token, rooms|
+        send_hitchat_message(token, rooms, options)
+      end
+    end
+
+    def send_hipchat_message(token, rooms, options)
+      hipchat_client = HipChat::Client.new(token)
+
+      if rooms.is_a?(String)
+        rooms = [rooms]
+      elsif rooms.is_a?(Symbol)
+        rooms = [rooms.to_s]
+      elsif rooms.is_a?(Array)
+        rooms = rooms.map(&:to_s)
       end
 
       rooms.each { |room|
