@@ -33,8 +33,8 @@ namespace :hipchat do
     end
   end
 
-  def send_hitchat_message(token, rooms, options)
-    hipchat_client = HipChat::Client.new(hipchat_token)
+  def send_hipchat_message(token, rooms, options)
+    hipchat_client = HipChat::Client.new(token)
 
     if rooms.is_a?(String)
       rooms = [rooms]
@@ -58,7 +58,7 @@ namespace :hipchat do
     hipchat_token = fetch(:hipchat_token)
     hipchat_rooms = fetch(:hipchat_rooms)
 
-    send_hitchat_message(hipchat_token, hipchat_rooms, options)
+    send_hipchat_message(hipchat_token, hipchat_rooms, options)
   end
 
   def send_groups_message(message, options)
@@ -66,7 +66,7 @@ namespace :hipchat do
     return unless hipchat_groups.is_a?(Hash)
 
     hipchat_groups.each do |token, rooms|
-      send_hitchat_message(token, rooms, options)
+      send_hipchat_message(token, rooms, options)
     end
   end
 
