@@ -25,17 +25,23 @@ namespace :hipchat do
   end
 
   def send_message(message, options)
-    hipchat_token = fetch(:hipchat_token)
-    hipchat_room_name = fetch(:hipchat_room_name)
-
-    hipchat_client = fetch(:hipchat_client, HipChat::Client.new(hipchat_token))
-
-    if hipchat_room_name.is_a?(String)
-      rooms = [hipchat_room_name]
-    elsif hipchat_room_name.is_a?(Symbol)
-      rooms = [hipchat_room_name.to_s]
+    hipchat_multi = fetch(:hipchat_multi, false)
+    if hipchat_multi
+      send_groups_message(message, options)
     else
-      rooms = hipchat_room_name
+      send_group_message(message, options)
+    end
+  end
+
+  def send_hitchat_message(token, rooms, options)
+    hipchat_client = HipChat::Client.new(hipchat_token)
+
+    if rooms.is_a?(String)
+      rooms = [rooms]
+    elsif rooms.is_a?(Symbol)
+      rooms = [rooms.to_s]
+    elsif rooms.is_a?(Array)
+      rooms = rooms.map(&:to_s)
     end
 
     rooms.each { |room|
@@ -46,6 +52,22 @@ namespace :hipchat do
         puts e.backtrace
       end
     }
+  end
+
+  def send_group_message(message, options)
+    hipchat_token = fetch(:hipchat_token)
+    hipchat_rooms = fetch(:hipchat_rooms)
+
+    send_hitchat_message(hipchat_token, hipchat_rooms, options)
+  end
+
+  def send_groups_message(message, options)
+    hichat_groups = fetch(:hipchat_groups)
+    return unless hipchat_groups.is_a?(Hash)
+
+    hipchat_groups.each do |token, rooms|
+      send_hitchat_message(token, rooms, options)
+    end
   end
 
   def deployment_name
