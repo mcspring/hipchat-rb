@@ -70,7 +70,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       hipchat_token = fetch(:hipchat_token)
       hipchat_rooms = fetch(:hipchat_rooms)
 
-      send_hipchat_message(hipchat_token, hipchat_rooms, options)
+      send_hipchat_message(hipchat_token, hipchat_rooms, message, options)
     end
 
     def send_groups_message(message, options)
@@ -78,11 +78,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       return unless hipchat_groups.is_a?(Hash)
 
       hipchat_groups.each do |token, rooms|
-        send_hipchat_message(token, rooms, options)
+        send_hipchat_message(token, rooms, message, options)
       end
     end
 
-    def send_hipchat_message(token, rooms, options)
+    def send_hipchat_message(token, rooms, message, options)
       hipchat_client = HipChat::Client.new(token)
 
       if rooms.is_a?(String)
