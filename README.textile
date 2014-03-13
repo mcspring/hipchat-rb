@@ -2,14 +2,16 @@ h1. HipChat Wrapper
 
 A very basic wrapper for the HipChat HTTP API.
 
+Modified by "Spring MC":https://github.com/mcspring
+
 h2. CI Status
 
-"!https://travis-ci.org/hipchat/hipchat-rb.png!":https://travis-ci.org/hipchat/hipchat-rb
-!https://coveralls.io/repos/hipchat/hipchat-rb/badge.png(Coverage Status)!:https://coveralls.io/r/hipchat/hipchat-rb
+"!https://travis-ci.org/mcspring/hipchat-rb.png!":https://travis-ci.org/mcspring/hipchat-rb
+!https://coveralls.io/repos/mcspring/hipchat-rb/badge.png(Coverage Status)!:https://coveralls.io/r/mcspring/hipchat-rb
 
 h2. Requirements
 * Ruby 1.9.3 or higher
-* HipChat Account, sign up "here!":https://hipchat.com/
+* HipChat Account, "sign up here!":https://hipchat.com/
 
 h1. Usage
 
@@ -92,15 +94,30 @@ bc. require 'hipchat/capistrano'
 
 deploy.rb
 
+# for single group
+
 bc.. # Required
 set :hipchat_token, "<your token>"
-set :hipchat_room_name, "Your room" # If you pass an array such as ["room_a", "room_b"] you can send announcements to multiple rooms.
+set :hipchat_rooms, "Your room" # If you pass an array such as ["room_a", "room_b"] you can send announcements to multiple rooms.
 # Optional
 set :hipchat_announce, false # notify users
 set :hipchat_color, 'yellow' #normal message color
 set :hipchat_success_color, 'green' #finished deployment message color
 set :hipchat_failed_color, 'red' #cancelled deployment message color
 set :hipchat_message_format, 'html' # Sets the deployment message format, see https://www.hipchat.com/docs/api/method/rooms/message
+
+# for multi groups
+
+bc.. # Required
+set :hipchat_multi, true
+set :hipchat_groups, { "<group one token>": "<group one room>", "<group two token>": "<group two roow>", ... } # The format of group room is similar to above.
+# Optional
+set :hipchat_announce, false # notify users
+set :hipchat_color, 'yellow' #normal message color
+set :hipchat_success_color, 'green' #finished deployment message color
+set :hipchat_failed_color, 'red' #cancelled deployment message color
+set :hipchat_message_format, 'html' # Sets the deployment message format, see https://www.hipchat.com/docs/api/method/rooms/message
+
 
 h3. Who did it?
 
