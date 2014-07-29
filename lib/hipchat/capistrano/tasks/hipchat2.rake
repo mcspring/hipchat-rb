@@ -83,23 +83,25 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     def send_hipchat_message(token, rooms, message, options)
-      hipchat_client = HipChat::Client.new(token)
+      Thread.new {
+        hipchat_client = HipChat::Client.new(token)
 
-      if rooms.is_a?(String)
-        rooms = [rooms]
-      elsif rooms.is_a?(Symbol)
-        rooms = [rooms.to_s]
-      elsif rooms.is_a?(Array)
-        rooms = rooms.map(&:to_s)
-      end
-
-      rooms.each { |room|
-        begin
-          hipchat_client[room].send(deploy_user, message, options)
-        rescue => e
-          puts e.message
-          puts e.backtrace
+        if rooms.is_a?(String)
+          rooms = [rooms]
+        elsif rooms.is_a?(Symbol)
+          rooms = [rooms.to_s]
+        elsif rooms.is_a?(Array)
+          rooms = rooms.map(&:to_s)
         end
+
+        rooms.each { |room|
+          begin
+            hipchat_client[room].send(deploy_user, message, options)
+          rescue => e
+            puts e.message
+            puts e.backtrace
+          end
+        }
       }
     end
 
